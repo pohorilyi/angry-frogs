@@ -5,7 +5,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Random;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -32,32 +31,24 @@ class AngryFrogsTest {
 
     @Test
     void loadTest() {
-        int similarStepsSize = 100;
-        int[] input = generateLoadTestInput(similarStepsSize);
+        int sequenceSize = 100000;
+        int[] ascendingSequence = IntStream.rangeClosed(1, sequenceSize).toArray();
 
         long startTime = System.nanoTime();
-        int bruteForceResult = sut.bruteForceSolution(input);
+        int bruteForceResult = sut.bruteForceSolution(ascendingSequence);
         long stopTime = System.nanoTime();
         long bruteForceExecutionTime = stopTime - startTime;
         System.out.println("Brute force completed in: " + bruteForceExecutionTime + " ns");
-        assertEquals(similarStepsSize + 1, bruteForceResult);
+        assertEquals(sequenceSize, bruteForceResult);
 
         startTime = System.nanoTime();
-        int stepsResult = sut.stepsSolution(input);
+        int stepsResult = sut.stepsSolution(ascendingSequence);
         stopTime = System.nanoTime();
         long stepsExecutionTime = stopTime - startTime;
         System.out.println("Steps completed in: " + stepsExecutionTime + " ns");
-        assertEquals(similarStepsSize + 1, stepsResult);
-
-
-        System.out.println("Steps is " + (float) bruteForceExecutionTime / stepsExecutionTime + " times faster");
-    }
-
-    private static int[] generateLoadTestInput(int similarStepsSize) {
-        IntStream ones = IntStream.generate(() -> 1).limit(similarStepsSize);
-        IntStream spike = IntStream.of(Integer.MAX_VALUE);
-        IntStream randomInts = IntStream.generate(() -> new Random().nextInt(5)).limit(10000000);
-        return IntStream.concat(IntStream.concat(ones, spike),randomInts).toArray();
+        assertEquals(sequenceSize, stepsResult);
+        System.out.println("For ascending sequence with size = " + sequenceSize +
+                " one pass solution is " + bruteForceExecutionTime / stepsExecutionTime + " times faster");
     }
 
     private static Stream<Arguments> paramsProvider() {
@@ -87,5 +78,4 @@ class AngryFrogsTest {
                 arguments(new int[]{1, 2, 3, 3, 2, 1, 2, 3, 2, 1}, 6)
         );
     }
-
 }
